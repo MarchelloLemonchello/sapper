@@ -1,44 +1,64 @@
 <script setup lang="ts">
-
 import PlayingField from "@/widgets/PlayingField.vue";
-
-import {onBeforeUnmount, onMounted} from "vue";
-import {useSapperStore} from "@/stores/counter.ts";
 import GameSettings from "@/widgets/GameSettings.vue";
-const sapperStore = useSapperStore();
+import NotificationContainer from "@/widgets/NotificationContainer.vue"
+import {ref, onMounted, onBeforeUnmount, computed} from "vue";
+
+const screenWidth = ref(window.innerWidth);
+
+const updateScreenWidth = () => {
+  screenWidth.value = window.innerWidth;
+};
+
 
 onMounted(() => {
-  window.addEventListener('resize', sapperStore.updateWindowHeight)
-})
+  window.addEventListener('resize', updateScreenWidth);
+});
 
 onBeforeUnmount(() => {
-  window.removeEventListener('resize', sapperStore.updateWindowHeight)
-})
+  window.removeEventListener('resize', updateScreenWidth);
+});
+
+const containerClass = computed(() => {
+  return screenWidth.value > 720 ? 'horizontal-layout' : 'vertical-layout';
+});
 </script>
 
 <template>
-  <div v-if="sapperStore.gameStatus === 'lose'" class="notification">
-    lose
-  </div>
-  <div v-if="sapperStore.gameStatus === 'win'" class="notification">
-    win
-  </div>
-  <div style="display: flex; justify-content: space-between; align-items: center;">
-    <GameSettings/>
-    <PlayingField/>
+  <NotificationContainer />
+  <div :class="containerClass">
+    <GameSettings class="settings-panel"/>
+    <PlayingField class="playing-field"/>
   </div>
 </template>
 
 <style scoped>
-.notification {
-  z-index: 2;
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  color: #fff;
-  font-size: 30px;
-  background-color: #2b393a;
-  padding: 20px;
-  border: #4C545C 1px solid;
+
+.horizontal-layout {
+  display: flex;
+  height: 100vh;
+}
+
+.vertical-layout {
+  display: flex;
+  flex-direction: column;
+}
+
+.settings-panel {
+  flex: 1;
+  max-width: 50%;
+}
+
+.playing-field {
+  flex: 1;
+  max-width: 50%;
+}
+
+@media (max-width: 720px) {
+  .settings-panel,
+  .playing-field {
+    max-width: 100%;
+    width: 100%;
+  }
 }
 </style>

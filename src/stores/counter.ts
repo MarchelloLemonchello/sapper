@@ -2,11 +2,15 @@ import {computed, type Ref, ref} from 'vue'
 import { defineStore } from 'pinia'
 import {type ICell, createField} from "@/shared/utils/createField.ts";
 import {randomNum} from "@/shared/utils/randomNum.ts";
+import {useTimerStore} from "@/stores/timer.ts";
 
 export const useSapperStore = defineStore('sapper', () => {
-  const gameStatus: Ref<'win'| 'lose'| 'ready' | 'play'> = ref('ready')
+  const timerStore = useTimerStore();
 
+  const gameStatus: Ref<'win'| 'lose'| 'ready' | 'play'> = ref('ready')
   const bombs: Ref<number> = ref(10);
+  const columns = ref(8)
+  const rows = ref(8)
 
   const flags = computed(() => {
     let setFlags = 0;
@@ -16,6 +20,10 @@ export const useSapperStore = defineStore('sapper', () => {
       })
     })
     return setFlags
+  })
+
+  const differenceBombsAndFlags = computed(() => {
+    return bombs.value - flags.value
   })
 
   const cellsLeft = computed(() => {
@@ -31,14 +39,13 @@ export const useSapperStore = defineStore('sapper', () => {
     return cells
   })
 
-  const columns = ref(8)
-  const rows = ref(8)
 
   const fieldOfCells = ref<ICell[][]>(createField(columns.value, rows.value))
 
   function updateField() {
     fieldOfCells.value = createField(columns.value, rows.value)
-    gameStatus.value = 'ready'
+    gameStatus.value = 'ready';
+    timerStore.resetTimer();
   }
 
   function changeColumns (newColumns: number) {columns.value = newColumns}
@@ -51,13 +58,14 @@ export const useSapperStore = defineStore('sapper', () => {
     if (fieldOfCells.value[row][col].visible) return
     if (fieldOfCells.value[row][col].flag) return
     if (gameStatus.value === 'ready') {
-      placeBombs(row,col);
+      timerStore.startTimer();
       gameStatus.value = 'play'
+      placeBombs(row,col);
     }
-    console.log('click')
+
     if (fieldOfCells.value[row][col].type == 'bomb') {
-      console.log('проиграл')
       gameStatus.value = 'lose'
+      timerStore.stopTimer();
       return
     }
     cellDeployment(row, col);
@@ -208,17 +216,6 @@ export const useSapperStore = defineStore('sapper', () => {
     }
   };
 
-  const windowHeight = ref(window.innerHeight)
-
-  const updateWindowHeight = () => {
-    windowHeight.value = window.innerHeight
-    console.log(windowHeight.value)
-  }
-
-  const cellsHeight = computed(() => {
-    return (windowHeight.value / columns.value) * 0.9
-  })
-
   return {
     columns,
     rows,
@@ -229,11 +226,10 @@ export const useSapperStore = defineStore('sapper', () => {
     updateField,
     handleCellClick,
     handleCellRightClick,
-    updateWindowHeight,
-    cellsHeight,
     gameStatus,
     bombs,
     flags,
+    differenceBombsAndFlags,
     cellsLeft
   }
 })

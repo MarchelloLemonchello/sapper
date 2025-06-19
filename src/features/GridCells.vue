@@ -3,14 +3,15 @@ import type { ICell } from "@/shared/utils/createField.ts";
 
 const props = defineProps<{
   cell: ICell;
-  gameStatus: 'win'| 'lose'| 'ready' | 'play'
+  gameStatus: 'win'| 'lose'| 'ready' | 'play';
+  size: string;
 }>();
 
 const colors = ["#0200FF", "#028200", "#FE0000", "#010084", "#840000", "#018284", "#81037E", "#777777"];
 </script>
 
 <template>
-  <div class="cell-container">
+  <div class="cell-container" :style="{ width: props.size, height: props.size }">
     <div
       class="cell-item"
       :class="{ 'flip-animation': props.cell.visible }"
@@ -37,9 +38,8 @@ const colors = ["#0200FF", "#028200", "#FE0000", "#010084", "#840000", "#018284"
 <style scoped>
 .cell-container {
   perspective: 1000px;
-  width: 100%;
-  height: 100%;
   outline: #333333 2px solid;
+  box-sizing: border-box;
 }
 
 .cell-item {
@@ -83,5 +83,9 @@ const colors = ["#0200FF", "#028200", "#FE0000", "#010084", "#840000", "#018284"
   }
 }
 
-
+@media (max-width: 720px) {
+  .cell-item {
+    font-size: 24px;
+  }
+}
 </style>
