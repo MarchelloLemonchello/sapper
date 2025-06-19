@@ -1,9 +1,43 @@
 <script setup lang="ts">
 import { useSapperStore } from '@/stores/counter';
 import { useTimerStore } from '@/stores/timer';
+import { getBestTime, saveRecord } from '@/shared/lib/records';
+import { computed, onMounted } from 'vue';
 
 const sapperStore = useSapperStore();
 const timerStore = useTimerStore();
+
+
+const bestTime = computed(() => {
+  return getBestTime(
+    sapperStore.rows,
+    sapperStore.columns,
+    sapperStore.bombs
+  );
+});
+
+const isNewRecord = computed(() => {
+  return !bestTime.value || timerStore.time < bestTime.value;
+});
+
+onMounted(() => {
+  if (isNewRecord.value) {
+    saveRecord({
+      rows: sapperStore.rows,
+      columns: sapperStore.columns,
+      bombs: sapperStore.bombs,
+      time: timerStore.time
+    });
+  }
+});
+
+const formatTime = (ms: number | null) => {
+  if (!ms) return '--:--';
+  const totalSeconds = Math.floor(ms / 1000);
+  const minutes = Math.floor(totalSeconds / 60).toString().padStart(2, '0');
+  const seconds = (totalSeconds % 60).toString().padStart(2, '0');
+  return `${minutes}:${seconds}`;
+};
 </script>
 
 <template>
@@ -22,8 +56,14 @@ const timerStore = useTimerStore();
       </div>
 
       <div class="stat-item">
-        <span class="stat-label">Time:</span>
+        <span class="stat-label">Your time:</span>
         <span class="stat-value">{{ timerStore.formattedTime }}</span>
+        <span v-if="isNewRecord" class="record-badge">NEW RECORD!</span>
+      </div>
+
+      <div class="stat-item" v-if="bestTime">
+        <span class="stat-label">Best time:</span>
+        <span class="stat-value">{{ formatTime(bestTime) }}</span>
       </div>
     </div>
 
@@ -50,10 +90,16 @@ const timerStore = useTimerStore();
   color: #2E7D32;
   border: none;
   padding: 0.8rem 1.5rem;
-  font-size: 1rem;
   border-radius: 4px;
-  cursor: pointer;
-  font-weight: bold;
   transition: all 0.3s ease;
+}
+
+.record-badge {
+  background: gold;
+  color: #000;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-left: 8px;
+  font-weight: bold;
 }
 </style>

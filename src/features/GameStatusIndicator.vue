@@ -20,7 +20,7 @@ const statusEmoji = computed(() => {
 
 <template>
   <div class="status-indicator">
-    <div class="status-emoji">{{ statusEmoji }}</div>
+    {{ statusEmoji }}
     <div class="status-text">
       <template v-if="sapperStore.gameStatus === 'play'">Game in progress</template>
       <template v-else-if="sapperStore.gameStatus === 'lose'">Game over!</template>
@@ -36,13 +36,8 @@ const statusEmoji = computed(() => {
   align-items: center;
   gap: 8px;
   padding: 8px 12px;
-  background: #2b393a;
   border-radius: 6px;
   border: 1px solid #4C545C;
-}
-
-.status-emoji {
-  font-size: 24px;
 }
 
 .status-text {

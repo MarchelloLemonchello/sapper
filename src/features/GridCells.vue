@@ -21,7 +21,6 @@ const colors = ["#0200FF", "#028200", "#FE0000", "#010084", "#840000", "#018284"
         <span
           v-if="props.cell?.environment"
           :style="`color: ${colors[props.cell.environment]}`"
-          class="cell-radar"
         >
           {{ props.cell?.environment }}
         </span>
@@ -53,7 +52,6 @@ const colors = ["#0200FF", "#028200", "#FE0000", "#010084", "#840000", "#018284"
   width: 100%;
   height: 100%;
   position: relative;
-  transform-style: preserve-3d;
 }
 
 .cell-content {

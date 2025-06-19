@@ -38,17 +38,13 @@ watch(
   display: flex;
   align-items: center;
   gap: 8px;
-  background: #2b393a;
   padding: 8px 12px;
   border-radius: 6px;
   border: 1px solid #4C545C;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .min-counter-label {
   color: #a0a0a0;
-  font-size: 14px;
-  font-weight: 500;
 }
 
 .min-counter-value {
@@ -81,7 +77,5 @@ watch(
 .cells-left {
   margin-left: auto;
   color: #a0a0a0;
-  font-size: 14px;
-  font-weight: 500;
 }
 </style>
